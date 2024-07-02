@@ -1,8 +1,6 @@
 from socket import *
 import socket
 import threading
-import time
-import sys
 import json
 import logging
 from chat import Chat
