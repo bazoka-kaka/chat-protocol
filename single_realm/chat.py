@@ -109,7 +109,7 @@ class Chat:
             inqueue_receiver[username_from] = Queue()
         inqueue_receiver[username_from].put(message)
 
-        return {'status': 'OK', 'message': 'Message Sent'}
+        return {'status': 'OK', 'message': 'Pesan terkirim'}
 
     def get_inbox(self, username):
         s_fr = self.get_user(username)
@@ -125,34 +125,34 @@ class Chat:
     def create_group(self, sessionid, groupname):
         username = self.sessions[sessionid]['username']
         if groupname in self.groups:
-            return {'status': 'ERROR', 'message': 'Group already exists'}
+            return {'status': 'ERROR', 'message': 'Grup sudah ada'}
         self.groups[groupname] = {'members': [username], 'messages': Queue()}
-        return {'status': 'OK', 'message': 'Group created'}
+        return {'status': 'OK', 'message': 'Grup berhasil dibuat'}
 
     def join_group(self, sessionid, groupname):
         username = self.sessions[sessionid]['username']
         if groupname not in self.groups:
-            return {'status': 'ERROR', 'message': 'Group not found'}
+            return {'status': 'ERROR', 'message': 'Grup tidak ditemukan'}
         if username in self.groups[groupname]['members']:
-            return {'status': 'ERROR', 'message': 'Already a member of the group'}
+            return {'status': 'ERROR', 'message': 'Sudah menjadi member grup'}
         self.groups[groupname]['members'].append(username)
-        return {'status': 'OK', 'message': 'Joined group'}
+        return {'status': 'OK', 'message': 'Berhasil join grup'}
 
     def send_group_message(self, sessionid, username_from, groupname, message):
         if groupname not in self.groups:
-            return {'status': 'ERROR', 'message': 'Group not found'}
+            return {'status': 'ERROR', 'message': 'Grup tidak ditemukan'}
         if username_from not in self.groups[groupname]['members']:
-            return {'status': 'ERROR', 'message': 'Not a member of the group'}
+            return {'status': 'ERROR', 'message': 'Bukan seorang member dari grup'}
         group_message = {'msg_from': username_from, 'msg': message}
         self.groups[groupname]['messages'].put(group_message)
-        return {'status': 'OK', 'message': 'Group message sent'}
+        return {'status': 'OK', 'message': 'Pesan grup terkirim'}
 
     def get_group_inbox(self, sessionid, groupname):
         username = self.sessions[sessionid]['username']
         if groupname not in self.groups:
-            return {'status': 'ERROR', 'message': 'Group not found'}
+            return {'status': 'ERROR', 'message': 'Grup tidak ditemukan'}
         if username not in self.groups[groupname]['members']:
-            return {'status': 'ERROR', 'message': 'Not a member of the group'}
+            return {'status': 'ERROR', 'message': 'Bukan seorang member dari grup'}
         messages = list(self.groups[groupname]['messages'].queue)
         return {'status': 'OK', 'messages': messages}
 

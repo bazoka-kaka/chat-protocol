@@ -62,23 +62,23 @@ class ChatClient:
         result = self.sendstring(string)
         if result['status'] == 'OK':
             self.tokenid = result['tokenid']
-            return "username {} logged in, token {}".format(username, self.tokenid)
+            return "username {} berhasil login, token {}".format(username, self.tokenid)
         else:
             return "Error, {}".format(result['message'])
 
     def sendmessage(self, usernameto="xxx", message="xxx"):
         if self.tokenid == "":
-            return "Error, not authorized"
+            return "Error, tidak terotorisasi"
         string = "send {} {} {} \r\n".format(self.tokenid, usernameto, message)
         result = self.sendstring(string)
         if result['status'] == 'OK':
-            return "message sent to {}".format(usernameto)
+            return "Pesan terkirim ke {}".format(usernameto)
         else:
             return "Error, {}".format(result['message'])
 
     def inbox(self):
         if self.tokenid == "":
-            return "Error, not authorized"
+            return "Error, tidak terotorisasi"
         string = "inbox {} \r\n".format(self.tokenid)
         result = self.sendstring(string)
         if result['status'] == 'OK':
@@ -88,7 +88,7 @@ class ChatClient:
 
     def create_group(self, groupname):
         if self.tokenid == "":
-            return "Error, not authorized"
+            return "Error, tidak terotorisasi"
         string = "create_group {} {} \r\n".format(self.tokenid, groupname)
         result = self.sendstring(string)
         if result['status'] == 'OK':
@@ -98,27 +98,27 @@ class ChatClient:
 
     def join_group(self, groupname):
         if self.tokenid == "":
-            return "Error, not authorized"
+            return "Error, tidak terotorisasi"
         string = "join_group {} {} \r\n".format(self.tokenid, groupname)
         result = self.sendstring(string)
         if result['status'] == 'OK':
-            return "Joined group {}".format(groupname)
+            return "Berhasil join grup {}".format(groupname)
         else:
             return "Error, {}".format(result['message'])
 
     def send_group_message(self, groupname, message):
         if self.tokenid == "":
-            return "Error, not authorized"
+            return "Error, tidak terotorisasi"
         string = "send_group {} {} {} \r\n".format(self.tokenid, groupname, message)
         result = self.sendstring(string)
         if result['status'] == 'OK':
-            return "Group message sent to {}".format(groupname)
+            return "Pesan grup berhasil terkirim ke {}".format(groupname)
         else:
             return "Error, {}".format(result['message'])
 
     def group_inbox(self, groupname):
         if self.tokenid == "":
-            return "Error, not authorized"
+            return "Error, tidak terotorisasi"
         string = "group_inbox {} {} \r\n".format(self.tokenid, groupname)
         result = self.sendstring(string)
         if result['status'] == 'OK':
@@ -131,4 +131,3 @@ if __name__=="__main__":
     while True:
         cmdline = input("Command {}:" . format(cc.tokenid))
         print(cc.proses(cmdline))
-
