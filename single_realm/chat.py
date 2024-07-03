@@ -117,8 +117,7 @@ class Chat:
         msgs = {users: [] for users in incoming}
         
         for user in incoming:
-            while not incoming[user].empty():
-                msgs[user].append(incoming[user].get_nowait())
+            msgs[user] = list(incoming[user].queue)
 
         return {'status': 'OK', 'messages': msgs}
 
