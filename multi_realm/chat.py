@@ -1,6 +1,8 @@
 import uuid
 import logging
 from queue import Queue
+import socket
+import json
 
 class Chat:
     def __init__(self):
@@ -12,7 +14,7 @@ class Chat:
                 'password': 'surabaya',
                 'incoming': {},
                 'outgoing': {},
-                'realm': '192.168.1.1'
+                'realm': '172.18.0.2'
             },
             'henderson': {
                 'nama': 'Jordan Henderson',
@@ -20,7 +22,7 @@ class Chat:
                 'password': 'surabaya',
                 'incoming': {},
                 'outgoing': {},
-                'realm': '192.168.1.2'
+                'realm': '172.18.0.4'
             },
             'lineker': {
                 'nama': 'Gary Lineker',
@@ -28,7 +30,7 @@ class Chat:
                 'password': 'surabaya',
                 'incoming': {},
                 'outgoing': {},
-                'realm': '192.168.1.3'
+                'realm': '172.18.0.3'
             }
         }
         self.groups = {}
@@ -101,8 +103,8 @@ class Chat:
             return {'status': 'ERROR', 'message': 'User Tidak Ditemukan'}
         
         if s_fr['realm'] != s_to['realm']:
-            # Handle cross-realm message sending here
-            return {'status': 'ERROR', 'message': 'Cross-realm message sending not supported yet'}
+            # Handle pengiriman pesan cross-realm
+            return self.send_cross_realm_message(s_fr['realm'], s_to['realm'], username_from, username_dest, message)
 
         message = {'msg_from': s_fr['nama'], 'msg_to': s_to['nama'], 'msg': message}
         outqueue_sender = s_fr['outgoing']
@@ -117,6 +119,27 @@ class Chat:
         inqueue_receiver[username_from].put(message)
 
         return {'status': 'OK', 'message': 'Pesan terkirim'}
+
+    def send_cross_realm_message(self, realm_from, realm_to, username_from, username_dest, message):
+        try:
+            logging.info(f"Attempting to connect to {realm_to}:8889")
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.connect((realm_to, 8889))
+                data = {
+                    'username_from': username_from,
+                    'username_dest': username_dest,
+                    'message': message
+                }
+                logging.info(f"Mengirim data: {data}")
+                sock.sendall((json.dumps(data) + "\r\n\r\n").encode())
+                response = sock.recv(1024)
+                logging.info(f"Respons diterima: {response}")
+                response_data = json.loads(response.decode())
+                return response_data
+        except Exception as e:
+            logging.error(f"Error mengirimkan pesan cross-realm: {e}")
+            return {'status': 'ERROR', 'message': f'Error mengirimkan pesan cross-realm: {str(e)}'}
+
 
     def get_inbox(self, username):
         s_fr = self.get_user(username)
